@@ -1,4 +1,3 @@
-"use client"; 
 import ProtectedRoute from "@/app/utils/protectedRoute";
 import { AppSidebar, Header, SidebarProvider } from "../imports";
 
