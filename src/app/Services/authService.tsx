@@ -1,10 +1,9 @@
 import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, setDoc, type DocumentData, } from "firebase/firestore";
+import { doc, getDoc, setDoc, type DocumentData, } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { useAuth } from "../ContextFiles/AuthContext";
+import { revalidateTag } from "next/cache";
 
 // Login and return user data from Firestore
-// ✅ DO NOT call any hooks here
 export async function loginUser(email: string, password: string) {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -50,6 +49,8 @@ export async function signupUser(email: string, password: string, username: stri
       username: username,
       createdAt: new Date().toISOString()
     })
+    // Revalidate the cache 
+    revalidateTag("users");
     return userCredential;
   } catch (error: any) {
     console.error("Signup error:", error.message);
