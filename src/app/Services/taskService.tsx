@@ -1,7 +1,10 @@
+"use server"
+
 import { collection, getDocs, Timestamp, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { TaskItem } from "../ContextFiles/TaskContext";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { unstable_cache } from "next/cache";
+import { revalidateTasks } from "../actions/revalidateTasks";
 
 export interface Task {
     title: string;
@@ -18,48 +21,6 @@ export interface Task {
     showStatus: boolean;
     isPublic: boolean;
     createdAt?: string;
-}
-
-export async function createTask(task: TaskItem) {
-    try {
-        const docRef = doc(db, "tasks", task.id); // manually specify ID
-        await setDoc(docRef, {
-            ...task,
-            createdAt: new Date().toISOString(),
-        });
-        // Revalidate the "tasks" cache
-        revalidateTag("tasks");
-        return task; // your ID is already in it
-    } catch (error: any) {
-        console.error("Error creating task:", error.message);
-        throw new Error(error.message);
-    }
-}
-
-export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
-    try {
-        const taskRef = doc(db, "tasks", taskId);
-        await updateDoc(taskRef, {
-            ...updatedTask,
-        });
-        //Revalidate the "tasks" cache
-        revalidateTag("tasks");
-    } catch (error: any) {
-        console.error("Error updating task:", error.message);
-        throw new Error(error.message);
-    }
-}
-
-export async function deleteTask(taskId: string) {
-    try {
-        const taskRef = doc(db, "tasks", taskId);
-        await deleteDoc(taskRef);
-        //Revalidate the "tasks" cache
-        revalidateTag("tasks");
-    } catch (error: any) {
-        console.error("Error deleting task:", error.message);
-        throw new Error(error.message);
-    }
 }
 
 async function getTasksFromFirebase() {
@@ -100,3 +61,46 @@ async function getTasksFromFirebase() {
         tags: ["tasks"],
     }
  )
+
+export async function createTask(task: TaskItem) {
+    try {
+        const docRef = doc(db, "tasks", task.id); // manually specify ID
+        await setDoc(docRef, {
+            ...task,
+            createdAt: new Date().toISOString(),
+        });
+        // Revalidate the "tasks" cache
+        revalidateTasks
+        return task; // your ID is already in it
+    } catch (error: any) {
+        console.error("Error creating task:", error.message);
+        throw new Error(error.message);
+    }
+}
+
+export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
+    try {
+        const taskRef = doc(db, "tasks", taskId);
+        await updateDoc(taskRef, {
+            ...updatedTask,
+        });
+        //Revalidate the "tasks" cache
+        revalidateTasks
+    } catch (error: any) {
+        console.error("Error updating task:", error.message);
+        throw new Error(error.message);
+    }
+}
+
+export async function deleteTask(taskId: string) {
+    try {
+        const taskRef = doc(db, "tasks", taskId);
+        await deleteDoc(taskRef);
+        //Revalidate the "tasks" cache
+        revalidateTasks
+    } catch (error: any) {
+        console.error("Error deleting task:", error.message);
+        throw new Error(error.message);
+    }
+}
+
