@@ -1,9 +1,6 @@
-"use server"
-
 import { collection, getDocs, Timestamp, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { TaskItem } from "../ContextFiles/TaskContext";
-import { unstable_cache } from "next/cache";
 import { revalidateTasks } from "../actions/revalidateTasks";
 
 export interface Task {
@@ -14,7 +11,7 @@ export interface Task {
     assignedTo: string;
     category: string;
     showCategory: boolean;
-    dueDate: Date | String | Timestamp;
+    dueDate: Date | String | number;
     priority: string;
     showPriority: boolean;
     status: string;
@@ -23,8 +20,9 @@ export interface Task {
     createdAt?: string;
 }
 
-async function getTasksFromFirebase() {
+export async function getTasksFromFirebase() {
     try {
+        console.log("🔥 Fetching fresh tasks from Firestore...");
         const snapshot = await getDocs(collection(db, "tasks"));
         const tasks = snapshot.docs.map(doc => {
             const data = doc.data();
@@ -37,7 +35,9 @@ async function getTasksFromFirebase() {
                 description: data.description,
                 assignedTo: data.assignedTo,
                 category: data.category,
-                dueDate: data.dueDate,
+                dueDate: data.dueDate instanceof Timestamp 
+                        ? data.dueDate.toMillis() // number
+                        : data.dueDate ?? null,
                 priority: data.priority,
                 status: data.status,
                 isPublic: data.isPublic,
@@ -54,13 +54,6 @@ async function getTasksFromFirebase() {
         throw new Error(error.message);
     }
 }
- export const getTasks = unstable_cache(
-    getTasksFromFirebase,
-    ["tasks"],
-    {
-        tags: ["tasks"],
-    }
- )
 
 export async function createTask(task: TaskItem) {
     try {
@@ -70,7 +63,7 @@ export async function createTask(task: TaskItem) {
             createdAt: new Date().toISOString(),
         });
         // Revalidate the "tasks" cache
-        revalidateTasks
+        await revalidateTasks();
         return task; // your ID is already in it
     } catch (error: any) {
         console.error("Error creating task:", error.message);
@@ -85,7 +78,7 @@ export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
             ...updatedTask,
         });
         //Revalidate the "tasks" cache
-        revalidateTasks
+        await revalidateTasks();
     } catch (error: any) {
         console.error("Error updating task:", error.message);
         throw new Error(error.message);
@@ -97,7 +90,7 @@ export async function deleteTask(taskId: string) {
         const taskRef = doc(db, "tasks", taskId);
         await deleteDoc(taskRef);
         //Revalidate the "tasks" cache
-        revalidateTasks
+        await revalidateTasks();
     } catch (error: any) {
         console.error("Error deleting task:", error.message);
         throw new Error(error.message);

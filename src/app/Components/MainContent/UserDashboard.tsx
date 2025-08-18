@@ -8,7 +8,7 @@ export type Task = {
   category: string | null
   status: string | null
   priority: string | null
-  dueDate: string | Date | Timestamp
+  dueDate: string | Date | number
   description: string | null
 }
 
@@ -64,13 +64,7 @@ export default function UserDashboard() {
         status: task.showStatus ? task.status : null,
         priority: task.showPriority ? task.priority : null,
         dueDate:
-          task.dueDate instanceof Date
-            ? task.dueDate.toLocaleDateString()
-            : task.dueDate instanceof Timestamp
-              ? task.dueDate.toDate().toLocaleDateString()
-              : typeof task.dueDate === "string"
-                ? new Date(task.dueDate).toLocaleDateString()
-                : "N/A",
+          new Date(task.dueDate).toLocaleDateString(),
         description: task.showDesc ? task.description : null,
       })
     }

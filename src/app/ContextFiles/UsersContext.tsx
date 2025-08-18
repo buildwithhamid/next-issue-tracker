@@ -1,42 +1,28 @@
-"use client"; 
+"use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getAllUsers } from '@/app/Services/userService';
+import React, { createContext, useContext, useState } from "react";
 
 interface UserData {
-    uid: string;
-    email: string;
-    username: string;
+  uid: string;
+  email: string;
+  username: string;
 }
 
 interface APIContextType {
-    users: UserData[];
-    fetchUsers: () => Promise<void>;
+  users: UserData[];
+  setUsers: React.Dispatch<React.SetStateAction<UserData[]>>;
 }
 
 const APIContext = createContext<APIContextType | null>(null);
 
-export const APIProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
-  const [users, setUsers] = useState<UserData[]>([]);
+export const APIProvider: React.FC<{ children: React.ReactNode; initialUsers: UserData[] }> = ({
+  children,
+  initialUsers,
+}) => {
+  const [users, setUsers] = useState(initialUsers);
+  return <APIContext.Provider value={{ users, setUsers }}>{children}</APIContext.Provider>;
+};
 
-  const fetchUsers = async () => {
-    try{
-        const data = await getAllUsers();
-        setUsers(data);
-    }catch(error){
-        console.error("Failed to fetch users:", error);
-    }
-  }
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  return (
-    <APIContext.Provider value={{ users, fetchUsers }}>
-      {children}
-    </APIContext.Provider>
-  );
-}
 export const useAPIContext = () => {
   const context = useContext(APIContext);
   if (!context) {

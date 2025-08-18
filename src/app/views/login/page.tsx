@@ -20,6 +20,7 @@ import {
   loginUser,
   useRouter,
 } from "../imports"
+import { setLoginCookies } from "@/app/actions/setAuthCookie";
 
 const FormSchema = z.object({
     email: z.email({
@@ -46,6 +47,13 @@ export default function Login() {
         try {
             const result = await loginUser(data.email, data.password);
             const { profile } = result;
+
+            await setLoginCookies({
+                userId: profile.uid,
+                username: profile.username,
+                email: profile.email,
+                role: profile.email==="task-manager@admn.com"?"Admin":"User"
+            })
 
             setEmail(profile.email);
             setUsername(profile.username);
@@ -90,12 +98,6 @@ export default function Login() {
                                 </div>
                                 <div className="grid gap-2">
                                     <PasswordField control={form.control} Password="password" />
-                                    {/* <a
-                                        href="#"
-                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a> */}
                                 </div>
                                 <Button
                                     type="submit"

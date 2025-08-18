@@ -60,10 +60,6 @@ export { loginUser, signupUser } from "../Services/authService"
 export { useAuth } from "../ContextFiles/AuthContext"
 export { TaskContext, type TaskItem } from "../ContextFiles/TaskContext"
 
-// Dashboard Pages
-export {default as AdminDashboard} from "@/app/views/dashboard/Admn/page"
-export {default as UserDashboard} from "@/app/views/dashboard/User/page"
-
 // Icons
 export { ChevronDown, Plus } from "lucide-react"
 
