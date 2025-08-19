@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useTaskFieldContext } from "@/app/ContextFiles/TaskFieldsContext";
 import {
@@ -68,8 +68,8 @@ export function AddDialog({ onClose }: AddDialogProps) {
   const { users } = useAPIContext();
   const [loading, setLoading] = useState(false);
   const {
-        showDescription, showCategory, showPriority, showStatus,isPublic,setIsPublic, resetFields
-      } = useTaskFieldContext();
+    showDescription, showCategory, showPriority, showStatus, isPublic, setIsPublic, resetFields
+  } = useTaskFieldContext();
 
   var categories = ["Personal", "Work", "Learning", "Others"]
   var priorities = ["Low", "High"]
@@ -101,7 +101,7 @@ export function AddDialog({ onClose }: AddDialogProps) {
 
     addTask(newTask);
     resetFields;
-    onClose(); 
+    onClose();
   }
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -135,11 +135,9 @@ export function AddDialog({ onClose }: AddDialogProps) {
               <CategoryField control={form.control} category="assignedTo" list={usernames} />
 
               <CategoryField control={form.control} category="priority" list={priorities} />
-
-              {/* <AmountField control={form.control} amount="amount" /> */}
               <DateField control={form.control} date="dueDate" />
               <div className="flex gap-2">
-                <Checkbox id="terms" checked={isPublic} onCheckedChange={setIsPublic}/>
+                <Checkbox id="terms" checked={isPublic} onCheckedChange={setIsPublic} />
                 <Label htmlFor="terms">Task should be public</Label>
               </div>
 

@@ -27,8 +27,7 @@ export default function NameField<T extends FieldValues>({control, name,}: NameF
             <FormItem>
               <FormLabel htmlFor={name}>{name}</FormLabel>
               <FormControl>
-                <Input 
-                
+                <Input                 
                 type="name"                    
                 placeholder={name} {...field} />
               </FormControl>

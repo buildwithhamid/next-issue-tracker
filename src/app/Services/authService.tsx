@@ -50,7 +50,7 @@ export async function signupUser(email: string, password: string, username: stri
       createdAt: new Date().toISOString()
     })
     // Revalidate the cache 
-    revalidateUsers;
+    await revalidateUsers();
     return userCredential;
   } catch (error: any) {
     console.error("Signup error:", error.message);
