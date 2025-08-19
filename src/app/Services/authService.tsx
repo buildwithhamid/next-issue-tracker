@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc, type DocumentData, } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { revalidateTag } from "next/cache";
+import { revalidateUsers } from "../actions/revalidateUsers";
 
 // Login and return user data from Firestore
 export async function loginUser(email: string, password: string) {
@@ -50,7 +50,7 @@ export async function signupUser(email: string, password: string, username: stri
       createdAt: new Date().toISOString()
     })
     // Revalidate the cache 
-    revalidateTag("users");
+    revalidateUsers;
     return userCredential;
   } catch (error: any) {
     console.error("Signup error:", error.message);

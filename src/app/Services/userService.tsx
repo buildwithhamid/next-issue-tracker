@@ -1,3 +1,5 @@
+"use server";
+
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { unstable_cache } from "next/cache";
