@@ -32,10 +32,6 @@ export {
   Settings,
 } from "lucide-react";
 
-// Next Router
-import { useRouter } from "next/navigation";
-
-
 // Contexts
 export { useAuth } from "@/app/ContextFiles/AuthContext";
 

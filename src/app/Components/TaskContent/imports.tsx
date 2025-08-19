@@ -1,9 +1,6 @@
 // ── React ─────────────────────────────
 export { useContext } from "react"
 
-// ── Firebase Types ───────────────────
-export type { Timestamp } from "firebase/firestore"
-
 // ── Lucide Icons ─────────────────────
 export {
   Pencil,

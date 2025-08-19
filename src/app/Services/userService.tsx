@@ -1,5 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { FirebaseError } from "firebase/app";
 
 export async function getAllUsersFromFirebase() {
   try {
@@ -13,9 +14,13 @@ export async function getAllUsersFromFirebase() {
       };
     });
     return users;
-  } catch (error: any) {
-    console.error("Error fetching users:", error.message);
+  } catch (error) {
+  if (error instanceof FirebaseError) {
+    console.error("Firebase error:", error.code, error.message);
     throw new Error(error.message);
   }
+  console.error("Unexpected error:", (error as Error).message);
+  throw error;
+}
 }
 

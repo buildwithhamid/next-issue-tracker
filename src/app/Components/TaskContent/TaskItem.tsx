@@ -5,7 +5,6 @@ import {
   Trash2,
   Card,
   CardContent,
-  type Timestamp,
   Button,
 } from "./imports"
 

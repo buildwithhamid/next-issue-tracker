@@ -1,10 +1,7 @@
 "use client";
 
-import type { Timestamp } from "firebase/firestore";
 import React, { createContext, useState, type ReactNode } from "react";
 import { createTask, deleteTask, updatetask } from "../Services/taskService";
-import { revalidateTasks } from "../actions/revalidateTasks";
-
 export interface TaskItem {
   id: string;
   userId: string;

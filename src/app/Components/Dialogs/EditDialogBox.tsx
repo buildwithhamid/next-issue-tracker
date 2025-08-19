@@ -1,8 +1,8 @@
 "use client"; 
 
 import { useTaskFieldContext } from "@/app/ContextFiles/TaskFieldsContext";
+import { useForm } from "react-hook-form";
 import {
-  useForm,
   zodResolver,
   Button,
   DialogContent,
@@ -114,7 +114,7 @@ useEffect(() => {
   };
     console.log(task.id);
     updateTask(task.id, updatedTask, );
-    resetFields;
+    resetFields();
     setLoading(false);
     onClose();
   }

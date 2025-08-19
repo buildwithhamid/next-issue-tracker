@@ -5,7 +5,6 @@ export { useState, useRef, useContext, useMemo, type DragEvent} from "react"
 export { useRouter } from "next/navigation";
 
 // Form handling
-export { useForm } from "react-hook-form"
 export { zodResolver } from "@hookform/resolvers/zod"
 export { z } from "zod"
 

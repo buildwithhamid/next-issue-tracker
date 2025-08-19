@@ -2,6 +2,7 @@ import { collection, getDocs, Timestamp, doc, updateDoc, deleteDoc, setDoc } fro
 import { db } from "../firebase";
 import type { TaskItem } from "../ContextFiles/TaskContext";
 import { revalidateTasks } from "../actions/revalidateTasks";
+import { FirebaseError } from "firebase/app";
 
 export interface Task {
     title: string;
@@ -11,7 +12,7 @@ export interface Task {
     assignedTo: string;
     category: string;
     showCategory: boolean;
-    dueDate: Date | String | number;
+    dueDate: Date | string | number;
     priority: string;
     showPriority: boolean;
     status: string;
@@ -35,9 +36,9 @@ export async function getTasksFromFirebase() {
                 description: data.description,
                 assignedTo: data.assignedTo,
                 category: data.category,
-                dueDate: data.dueDate instanceof Timestamp 
-                        ? data.dueDate.toMillis() // number
-                        : data.dueDate ?? null,
+                dueDate: data.dueDate instanceof Timestamp
+                    ? data.dueDate.toMillis() // number
+                    : data.dueDate ?? null,
                 priority: data.priority,
                 status: data.status,
                 isPublic: data.isPublic,
@@ -49,9 +50,13 @@ export async function getTasksFromFirebase() {
         })
 
         return tasks;
-    } catch (error: any) {
-        console.error("Error fetching tasks:", error.message);
-        throw new Error(error.message);
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
 }
 
@@ -65,9 +70,13 @@ export async function createTask(task: TaskItem) {
         // Revalidate the "tasks" cache
         await revalidateTasks();
         return task; // your ID is already in it
-    } catch (error: any) {
-        console.error("Error creating task:", error.message);
-        throw new Error(error.message);
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
 }
 
@@ -79,9 +88,13 @@ export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
         });
         //Revalidate the "tasks" cache
         await revalidateTasks();
-    } catch (error: any) {
-        console.error("Error updating task:", error.message);
-        throw new Error(error.message);
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
 }
 
@@ -91,9 +104,13 @@ export async function deleteTask(taskId: string) {
         await deleteDoc(taskRef);
         //Revalidate the "tasks" cache
         await revalidateTasks();
-    } catch (error: any) {
-        console.error("Error deleting task:", error.message);
-        throw new Error(error.message);
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
 }
 

@@ -22,7 +22,7 @@ import { useTaskFieldContext } from "@/app/ContextFiles/TaskFieldsContext";
 interface CategoryFieldProps<T extends FieldValues> {
   control: Control<T>
   category: Path<T>
-  list: String[]
+  list: string[]
 }
 
 export default function CategoryField<T extends FieldValues>({ control, category, list }: CategoryFieldProps<T>) {
@@ -32,13 +32,14 @@ export default function CategoryField<T extends FieldValues>({ control, category
     showPriority, setShowPriority,
   } = useTaskFieldContext();
 
-  const handleChange = (val: boolean) => {
+  const handleChange = (val: boolean | "indeterminate") => {
+    const checked = val === true; // normalize
     if (category === "category") {
-      setShowCategory(val);
+      setShowCategory(checked);
     } else if (category === "status") {
-      setShowStatus(val);
+      setShowStatus(checked);
     } else if (category === "priority") {
-      setShowPriority(val);
+      setShowPriority(checked);
     }
   };
 
@@ -61,7 +62,8 @@ export default function CategoryField<T extends FieldValues>({ control, category
               {category}
             </FormLabel>
           </div>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select onValueChange={field.onChange} defaultValue={field.value}   disabled={!isChecked}
+>
             <FormControl>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={`Select ${category}`} />
@@ -69,7 +71,7 @@ export default function CategoryField<T extends FieldValues>({ control, category
             </FormControl>
             <SelectContent>
               {list.map((cat) => (
-                <SelectItem key={cat.toString()} value={cat.toString()}>
+                <SelectItem key={cat} value={cat}>
                   {cat}
                 </SelectItem>
               ))}

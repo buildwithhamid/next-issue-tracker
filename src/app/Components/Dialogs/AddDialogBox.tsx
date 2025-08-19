@@ -1,8 +1,8 @@
 "use client";
 
 import { useTaskFieldContext } from "@/app/ContextFiles/TaskFieldsContext";
+import { useForm } from "react-hook-form"
 import {
-  useForm,
   zodResolver,
   Button,
   DialogContent,
@@ -71,9 +71,9 @@ export function AddDialog({ onClose }: AddDialogProps) {
     showDescription, showCategory, showPriority, showStatus, isPublic, setIsPublic, resetFields
   } = useTaskFieldContext();
 
-  var categories = ["Personal", "Work", "Learning", "Others"]
-  var priorities = ["Low", "High"]
-  var status = ["Pending", "Completed", "Inprogress"]
+  const categories = ["Personal", "Work", "Learning", "Others"]
+  const priorities = ["Low", "High"]
+  const status = ["Pending", "Completed", "Inprogress"]
   const usernames: string[] = users.map((user: { username: string; }) => user.username);
 
 
@@ -100,7 +100,7 @@ export function AddDialog({ onClose }: AddDialogProps) {
     };
 
     addTask(newTask);
-    resetFields;
+    resetFields();
     onClose();
   }
   const form = useForm<z.infer<typeof FormSchema>>({
