@@ -42,11 +42,12 @@ interface EditDialogProps {
   task: TaskItem;
 }
 
-function toDate(dueDate: string | Date | { toDate: () => Date }): Date {
+function toDate(dueDate: string | Date | number | { toDate: () => Date }): Date {
   if (dueDate instanceof Date) return dueDate;
   if (typeof dueDate === "string") return new Date(dueDate);
+  if (typeof dueDate === "number") return new Date(dueDate); 
   if (typeof dueDate === "object" && typeof dueDate.toDate === "function") {
-    return dueDate.toDate(); // Firebase Timestamp
+    return dueDate.toDate();
   }
   throw new Error("Invalid dueDate format");
 }

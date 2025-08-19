@@ -56,8 +56,6 @@ const TaskProvider: React.FC<TaskProviderProps> = ({ children, initialTasks }) =
       await deleteTask(id);
       setTaskData(prev => prev.filter(item => item.id !== id));
       console.log("Before revalidating tasks at", new Date().toISOString());
-
-      // revalidateTasks;
     } catch (error) {
       console.error("Failed to remove task:", error);
     }
@@ -70,8 +68,6 @@ const TaskProvider: React.FC<TaskProviderProps> = ({ children, initialTasks }) =
         prev.map(item => (item.id === id ? { ...item, ...updatedTask } : item))
       );
       console.log("Before revalidating tasks at", new Date().toISOString());
-
-      // revalidateTasks;
     } catch (error) {
       console.error("Failed to update task:", error);
     }

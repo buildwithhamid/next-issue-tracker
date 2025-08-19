@@ -22,7 +22,7 @@ export interface Task {
 
 export async function getTasksFromFirebase() {
     try {
-        console.log("🔥 Fetching fresh tasks from Firestore...");
+        console.log("Fetching fresh tasks from Firestore...");
         const snapshot = await getDocs(collection(db, "tasks"));
         const tasks = snapshot.docs.map(doc => {
             const data = doc.data();
