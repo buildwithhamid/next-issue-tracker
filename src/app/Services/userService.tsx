@@ -1,7 +1,8 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { unstable_cache } from "next/cache";
 
-export async function getAllUsers() {
+async function getAllUsersFromFirebase() {
   try {
     const snapshot = await getDocs(collection(db, "users"));
     const users = snapshot.docs.map(doc => {
@@ -18,3 +19,9 @@ export async function getAllUsers() {
     throw new Error(error.message);
   }
 }
+
+export const getAllUsers = unstable_cache(
+  getAllUsersFromFirebase,
+  ["users"],
+  {tags: ["users"]}
+)
