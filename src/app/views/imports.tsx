@@ -5,7 +5,6 @@ export { useState, useRef, useContext, useMemo, type DragEvent} from "react"
 export { useRouter } from "next/navigation";
 
 // Form handling
-export { useForm } from "react-hook-form"
 export { zodResolver } from "@hookform/resolvers/zod"
 export { z } from "zod"
 
@@ -59,10 +58,6 @@ export { loginUser, signupUser } from "../Services/authService"
 // Context
 export { useAuth } from "../ContextFiles/AuthContext"
 export { TaskContext, type TaskItem } from "../ContextFiles/TaskContext"
-
-// Dashboard Pages
-export {default as AdminDashboard} from "@/app/views/dashboard/Admn/page"
-export {default as UserDashboard} from "@/app/views/dashboard/User/page"
 
 // Icons
 export { ChevronDown, Plus } from "lucide-react"

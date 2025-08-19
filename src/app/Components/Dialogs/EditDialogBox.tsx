@@ -1,8 +1,8 @@
 "use client"; 
 
 import { useTaskFieldContext } from "@/app/ContextFiles/TaskFieldsContext";
+import { useForm } from "react-hook-form";
 import {
-  useForm,
   zodResolver,
   Button,
   DialogContent,
@@ -42,11 +42,12 @@ interface EditDialogProps {
   task: TaskItem;
 }
 
-function toDate(dueDate: string | Date | { toDate: () => Date }): Date {
+function toDate(dueDate: string | Date | number | { toDate: () => Date }): Date {
   if (dueDate instanceof Date) return dueDate;
   if (typeof dueDate === "string") return new Date(dueDate);
+  if (typeof dueDate === "number") return new Date(dueDate); 
   if (typeof dueDate === "object" && typeof dueDate.toDate === "function") {
-    return dueDate.toDate(); // Firebase Timestamp
+    return dueDate.toDate();
   }
   throw new Error("Invalid dueDate format");
 }
@@ -113,7 +114,7 @@ useEffect(() => {
   };
     console.log(task.id);
     updateTask(task.id, updatedTask, );
-    resetFields;
+    resetFields();
     setLoading(false);
     onClose();
   }

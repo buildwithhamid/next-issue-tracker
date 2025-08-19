@@ -1,25 +1,26 @@
 "use client"
 
 import React from "react";
+import { useForm } from "react-hook-form";
 import {
-  useState,
-  useForm,
-  zodResolver,
-  z,
-  Button,
-  Form,
-  Spinner,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  EmailField,
-  PasswordField,
-  useAuth,
-  loginUser,
-  useRouter,
-} from "../imports"
+    useState,
+    zodResolver,
+    z,
+    Button,
+    Form,
+    Spinner,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+    EmailField,
+    PasswordField,
+    useAuth,
+    loginUser,
+    useRouter,
+} from "../imports";
+import { setLoginCookies } from "@/app/actions/setAuthCookie";
 
 const FormSchema = z.object({
     email: z.email({
@@ -35,7 +36,7 @@ const FormSchema = z.object({
 });
 
 export default function Login() {
-  const router = useRouter();
+    const router = useRouter();
     const { userId, username, email, setEmail, setUserId, setUsername } = useAuth();
 
     const [redirectToDashboard, setRedirectToDashboard] = useState(false);
@@ -47,17 +48,29 @@ export default function Login() {
             const result = await loginUser(data.email, data.password);
             const { profile } = result;
 
+            await setLoginCookies({
+                userId: profile.uid,
+                username: profile.username,
+                email: profile.email,
+                role: profile.email === "task-manager@admn.com" ? "Admin" : "User"
+            })
+
             setEmail(profile.email);
             setUsername(profile.username);
             setUserId(profile.uid);
 
             setRedirectToDashboard(true);
-        } catch (error: any) {
-            setLoading(false)
+        } catch (error: unknown) {
+            setLoading(false);
 
-            form.setError("email", { message: "Invalid email" });
-            form.setError("password", { message: "Invalid password" });
+            if (error instanceof Error) {
+                console.error(error.message);
+            }
+
+            form.setError("email", { message: "" });
+            form.setError("password", { message: "Invalid email or password" });
         }
+
     }
 
     React.useEffect(() => {
@@ -90,12 +103,6 @@ export default function Login() {
                                 </div>
                                 <div className="grid gap-2">
                                     <PasswordField control={form.control} Password="password" />
-                                    {/* <a
-                                        href="#"
-                                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                                    >
-                                        Forgot your password?
-                                    </a> */}
                                 </div>
                                 <Button
                                     type="submit"

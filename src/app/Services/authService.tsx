@@ -1,7 +1,8 @@
 import { createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc, setDoc, type DocumentData, } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { revalidateTag } from "next/cache";
+import { revalidateUsers } from "../actions/revalidateUsers";
+import { FirebaseError } from "firebase/app";
 
 // Login and return user data from Firestore
 export async function loginUser(email: string, password: string) {
@@ -31,9 +32,13 @@ export async function loginUser(email: string, password: string) {
       credential: userCredential,
       profile,
     };
-  } catch (error: any) {
-    console.error("Login error:", error.message);
-    throw new Error(error.message);
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error("Firebase error:", error.code, error.message);
+      throw new Error(error.message);
+    }
+    console.error("Unexpected error:", (error as Error).message);
+    throw error;
   }
 }
 
@@ -43,18 +48,22 @@ export async function signupUser(email: string, password: string, username: stri
     const user = userCredential.user;
 
     // Store user info in Firebase
-    await setDoc(doc(db, "users", user.uid),{
+    await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       email: user.email,
       username: username,
       createdAt: new Date().toISOString()
     })
     // Revalidate the cache 
-    revalidateTag("users");
+    await revalidateUsers();
     return userCredential;
-  } catch (error: any) {
-    console.error("Signup error:", error.message);
-    throw new Error(error.message);
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error("Firebase error:", error.code, error.message);
+      throw new Error(error.message);
+    }
+    console.error("Unexpected error:", (error as Error).message);
+    throw error;
   }
 }
 
@@ -62,8 +71,12 @@ export async function logoutUser() {
   try {
     await signOut(auth);
     localStorage.clear();
-  } catch (error: any) {
-    console.error("Logout error:", error.message);
-    throw new Error(error.message);
+  } catch (error) {
+    if (error instanceof FirebaseError) {
+      console.error("Firebase error:", error.code, error.message);
+      throw new Error(error.message);
+    }
+    console.error("Unexpected error:", (error as Error).message);
+    throw error;
   }
 }

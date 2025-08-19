@@ -6,7 +6,6 @@ export { v4 as uuidv4 } from "uuid"
 
 // zod & form
 export { default as z } from "zod"
-export { useForm } from "react-hook-form"
 export { zodResolver } from "@hookform/resolvers/zod"
 
 // UI components

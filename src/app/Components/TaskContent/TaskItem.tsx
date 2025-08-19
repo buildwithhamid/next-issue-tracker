@@ -5,7 +5,6 @@ import {
   Trash2,
   Card,
   CardContent,
-  type Timestamp,
   Button,
 } from "./imports"
 
@@ -13,7 +12,7 @@ import {
 interface TaskCardProps {
     title: string;
     category: string;
-    dueDate: string | Date | Timestamp;
+    dueDate: string | Date | number;
     status: string;
     assignedTo: string;
     priority: string;
@@ -34,22 +33,23 @@ export function TaskItemCard({
     onDelete,
 }: TaskCardProps) {
 
-    let formattedDate = "Invalid Date";
+    const formattedDate = new Date(dueDate).toLocaleDateString();
 
-    if (dueDate instanceof Date) {
-        console.log(dueDate)
-        formattedDate = dueDate.toLocaleDateString();
-        console.log(formattedDate)
-    } else if (typeof dueDate === "string") {
-        console.log(dueDate)
-        const parsed = new Date(dueDate);
-        formattedDate = isNaN(parsed.getTime()) ? "Invalid Date" : parsed.toLocaleDateString();
-        console.log(formattedDate)
-    } else if (typeof dueDate === "object" && "toDate" in dueDate && typeof dueDate.toDate === "function") {
-        console.log(dueDate)
-        formattedDate = dueDate.toDate().toLocaleDateString();
-        console.log(formattedDate)
-    }
+
+    // if (dueDate instanceof Date) {
+    //     console.log(dueDate)
+    //     formattedDate = dueDate.toLocaleDateString();
+    //     console.log(formattedDate)
+    // } else if (typeof dueDate === "string") {
+    //     console.log(dueDate)
+    //     const parsed = new Date(dueDate);
+    //     formattedDate = isNaN(parsed.getTime()) ? "Invalid Date" : parsed.toLocaleDateString();
+    //     console.log(formattedDate)
+    // } else if (typeof dueDate === "object" && "toDate" in dueDate && typeof dueDate.toDate === "function") {
+    //     console.log(dueDate)
+    //     formattedDate = dueDate.toDate().toLocaleDateString();
+    //     console.log(formattedDate)
+    // }
 
     return (
         <Card className="w-full">

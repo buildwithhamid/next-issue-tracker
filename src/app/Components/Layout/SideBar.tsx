@@ -16,6 +16,7 @@ import {
   Settings,
   useAuth,
 } from "./imports";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { logoutUser } from "@/app/Services/authService";
@@ -60,7 +61,7 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <div className="flex flex-col justify-center items-center gap-2">
-                  <img className="h-25 w-25" src="/woman.png" alt="" />
+                  <Image className="h-25 w-25" src="/woman.png" alt="" />
                   <p className="text-gray-700">{username}</p>
                   <p className="text-gray-700">{email}</p>
                 </div>

@@ -1,9 +1,9 @@
 "use client"
 
+import { useForm } from "react-hook-form";
 import {
   useState,
   useRouter,
-  useForm,
   zodResolver,
   z,
   Button,
@@ -18,7 +18,7 @@ import {
   PasswordField,
   NameField,
   signupUser,
-} from "../imports"
+} from "../imports";
 
 const FormSchema = z.object({
   Username: z.string(
@@ -60,9 +60,10 @@ export default function Signup() {
       setError(null);
       await signupUser(data.email, data.password, data.Username);
       router.push("/views/login")
-    } catch (err: any) {
-      setLoading(false)
-      setError(err.message || "Signup failed. Try again.");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Login failed:", error.message);
+      }
     }
   }
 

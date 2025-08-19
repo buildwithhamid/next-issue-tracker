@@ -1,8 +1,8 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-import { unstable_cache } from "next/cache";
+import { FirebaseError } from "firebase/app";
 
-async function getAllUsersFromFirebase() {
+export async function getAllUsersFromFirebase() {
   try {
     const snapshot = await getDocs(collection(db, "users"));
     const users = snapshot.docs.map(doc => {
@@ -14,14 +14,13 @@ async function getAllUsersFromFirebase() {
       };
     });
     return users;
-  } catch (error: any) {
-    console.error("Error fetching users:", error.message);
+  } catch (error) {
+  if (error instanceof FirebaseError) {
+    console.error("Firebase error:", error.code, error.message);
     throw new Error(error.message);
   }
+  console.error("Unexpected error:", (error as Error).message);
+  throw error;
+}
 }
 
-export const getAllUsers = unstable_cache(
-  getAllUsersFromFirebase,
-  ["users"],
-  {tags: ["users"]}
-)

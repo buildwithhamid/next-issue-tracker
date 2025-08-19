@@ -1,15 +1,10 @@
-"use client"; 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { useView } from "@/app/ContextFiles/ViewContext";
-import { AdminDashboard, useAuth, UserDashboard } from "../imports";
+export default async function DashboardPage() {
 
-export default function Dashboard() {
-  const { email } = useAuth();
-  const { view } = useView()
+  const cookieStore = cookies();
+  const role = (await cookieStore).get("role")?.value || "Admin"; // default if not set
 
-  if (email === "task-manager@admn.com" && view==="Admin") {
-    return <AdminDashboard />;
-  }
-
-  return <UserDashboard />;
+  redirect(`/views/dashboard/${role}`);
 }

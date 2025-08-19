@@ -1,7 +1,8 @@
 import { collection, getDocs, Timestamp, doc, updateDoc, deleteDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import type { TaskItem } from "../ContextFiles/TaskContext";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidateTasks } from "../actions/revalidateTasks";
+import { FirebaseError } from "firebase/app";
 
 export interface Task {
     title: string;
@@ -11,7 +12,7 @@ export interface Task {
     assignedTo: string;
     category: string;
     showCategory: boolean;
-    dueDate: Date | String | Timestamp;
+    dueDate: Date | string | number;
     priority: string;
     showPriority: boolean;
     status: string;
@@ -20,50 +21,9 @@ export interface Task {
     createdAt?: string;
 }
 
-export async function createTask(task: TaskItem) {
+export async function getTasksFromFirebase() {
     try {
-        const docRef = doc(db, "tasks", task.id); // manually specify ID
-        await setDoc(docRef, {
-            ...task,
-            createdAt: new Date().toISOString(),
-        });
-        // Revalidate the "tasks" cache
-        revalidateTag("tasks");
-        return task; // your ID is already in it
-    } catch (error: any) {
-        console.error("Error creating task:", error.message);
-        throw new Error(error.message);
-    }
-}
-
-export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
-    try {
-        const taskRef = doc(db, "tasks", taskId);
-        await updateDoc(taskRef, {
-            ...updatedTask,
-        });
-        //Revalidate the "tasks" cache
-        revalidateTag("tasks");
-    } catch (error: any) {
-        console.error("Error updating task:", error.message);
-        throw new Error(error.message);
-    }
-}
-
-export async function deleteTask(taskId: string) {
-    try {
-        const taskRef = doc(db, "tasks", taskId);
-        await deleteDoc(taskRef);
-        //Revalidate the "tasks" cache
-        revalidateTag("tasks");
-    } catch (error: any) {
-        console.error("Error deleting task:", error.message);
-        throw new Error(error.message);
-    }
-}
-
-async function getTasksFromFirebase() {
-    try {
+        console.log("Fetching fresh tasks from Firestore...");
         const snapshot = await getDocs(collection(db, "tasks"));
         const tasks = snapshot.docs.map(doc => {
             const data = doc.data();
@@ -76,7 +36,9 @@ async function getTasksFromFirebase() {
                 description: data.description,
                 assignedTo: data.assignedTo,
                 category: data.category,
-                dueDate: data.dueDate,
+                dueDate: data.dueDate instanceof Timestamp
+                    ? data.dueDate.toMillis() // number
+                    : data.dueDate ?? null,
                 priority: data.priority,
                 status: data.status,
                 isPublic: data.isPublic,
@@ -88,15 +50,67 @@ async function getTasksFromFirebase() {
         })
 
         return tasks;
-    } catch (error: any) {
-        console.error("Error fetching tasks:", error.message);
-        throw new Error(error.message);
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
 }
- export const getTasks = unstable_cache(
-    getTasksFromFirebase,
-    ["tasks"],
-    {
-        tags: ["tasks"],
+
+export async function createTask(task: TaskItem) {
+    try {
+        const docRef = doc(db, "tasks", task.id); // manually specify ID
+        await setDoc(docRef, {
+            ...task,
+            createdAt: new Date().toISOString(),
+        });
+        // Revalidate the "tasks" cache
+        await revalidateTasks();
+        return task; // your ID is already in it
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
     }
- )
+}
+
+export async function updatetask(taskId: string, updatedTask: Partial<Task>) {
+    try {
+        const taskRef = doc(db, "tasks", taskId);
+        await updateDoc(taskRef, {
+            ...updatedTask,
+        });
+        //Revalidate the "tasks" cache
+        await revalidateTasks();
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
+    }
+}
+
+export async function deleteTask(taskId: string) {
+    try {
+        const taskRef = doc(db, "tasks", taskId);
+        await deleteDoc(taskRef);
+        //Revalidate the "tasks" cache
+        await revalidateTasks();
+    } catch (error) {
+        if (error instanceof FirebaseError) {
+            console.error("Firebase error:", error.code, error.message);
+            throw new Error(error.message);
+        }
+        console.error("Unexpected error:", (error as Error).message);
+        throw error;
+    }
+}
+

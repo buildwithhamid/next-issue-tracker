@@ -27,8 +27,7 @@ export default function PasswordField<T extends FieldValues>({control, Password,
               <FormLabel htmlFor={Password} >{Password}</FormLabel>
               <FormControl>
                 <Input 
-                type="password"                    
-                
+                type="password"                                
                 placeholder={Password} {...field} />
               </FormControl>
               <FormMessage />

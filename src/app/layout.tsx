@@ -1,13 +1,12 @@
-// app/layout.tsx
 import "./globals.css";
 import { ReactNode } from "react";
-import TaskProvider from "./ContextFiles/TaskContext";
 import { ThemeProvider } from "./ContextFiles/theme_provider";
-import { APIProvider } from "./ContextFiles/UsersContext";
 import { AuthProvider } from "./ContextFiles/AuthContext";
 import { ViewProvider } from "./ContextFiles/ViewContext";
 import { TaskFieldProvider } from "./ContextFiles/TaskFieldsContext";
 import { Metadata } from "next";
+import APIProviderWrapper from "./ContextFiles/APIProviderWrapper";
+import TaskProviderWrapper from "./ContextFiles/TaskProviderWrapper";
 
 export const metadata: Metadata = {
   title: "Task manager",
@@ -19,9 +18,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <head />
       <body>
-        <TaskProvider>
+        <TaskProviderWrapper>
           <TaskFieldProvider>
-            <APIProvider>
+            <APIProviderWrapper>
               <AuthProvider>
                 <ViewProvider>
                   <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -29,9 +28,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   </ThemeProvider>
                 </ViewProvider>
               </AuthProvider>
-            </APIProvider>
+            </APIProviderWrapper>
           </TaskFieldProvider>
-        </TaskProvider>
+        </TaskProviderWrapper>
       </body>
     </html>
   );
